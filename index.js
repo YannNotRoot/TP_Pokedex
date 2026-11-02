@@ -8,6 +8,67 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
+/**
+* Fonction qui va limiter le nombre de requêtes par IP sur une période donnée
+*
+* @param {*} req
+* @param {*} maxRequests
+* @param {*} timeWindow
+* @returns boolean
+*/
+function limitRequests(request, maxRequests = 10, timeWindow = 60000) {
+    // Récupération de l'adresse IP contenue dans la requête
+    const ip = request.ip;
+
+    // Définition d'un booléen d'autorisation de la requête
+    let requestAuthorized = true;
+
+    // Récupération du moment actuel
+    const currentTime = Date.now();
+    
+    // Dans l'objet **Application** de l'objet **request** on ajoute un tableau de **comptage des requêtes**
+    if (!request.app.locals.requestCounts) {
+    request.app.locals.requestCounts = {};
+    }
+
+    //console.log(request.app.locals.requestCounts);
+
+    // On y ajoute l'adresse IP de la requête (un **timestamp** est automatiquement ajouté)
+    if (!request.app.locals.requestCounts[ip]) {
+        request.app.locals.requestCounts[ip] = [];
+    }
+
+    // Si l'adresse IP est déjà présente dans ce tableau ET que son **timestamp** est trop ancien, on le supprime
+    request.app.locals.requestCounts[ip] = request.app.locals.requestCounts[ip].filter(
+    (timestamp) => currentTime - timestamp < timeWindow
+    );
+
+    // S'il y a plus d'entrée correspondante à cette adresse IP que la limite, la requête est refusée, sinon on ajoute le **timestamp** de la requête dans le tableau
+    if (request.app.locals.requestCounts[ip].length >= maxRequests) {
+    requestAuthorized = false;
+    }else{
+    // on ajoute le **timestamp** de la requête dans le tableau
+    request.app.locals.requestCounts[ip].push(currentTime);
+    }
+
+    // Renvoi du jeton d'autorisation
+    return requestAuthorized;
+}
+
+function checkRequests(request, response, next) {
+
+    if (!limitRequests(request, 10, 60000)) {
+
+        console.log(`Too many requests from IP: ${request.ip}`);
+
+        return response.status(429).json({
+            message: "Too many requests. Please try again later.",
+        });
+    }
+
+    next();
+}
+
 // ---------- Fonctions Pokedex ----------
 
 // Get all Pokemons
@@ -27,7 +88,6 @@ function findAll(request, response) {
 
     });
 };
-
 
 // Get random Pokemon
 function findOneByRandom(request, response) {
@@ -110,6 +170,7 @@ function findOneById(request, response) {
     });
 };
 
+app.use(checkRequests);
 // ---------- Routes ----------
 
 app.get("/api/v1/pokemons", findAll);
