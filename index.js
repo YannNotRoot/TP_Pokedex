@@ -11,7 +11,7 @@ const app = express();
 /**
 * Fonction qui va limiter le nombre de requêtes par IP sur une période donnée
 *
-* @param {*} req
+* @param {*} request
 * @param {*} maxRequests
 * @param {*} timeWindow
 * @returns boolean
