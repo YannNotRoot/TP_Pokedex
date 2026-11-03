@@ -55,16 +55,16 @@ Le serveur écoute par défaut sur l'adresse `http://127.0.0.1:5001`.
 
 Toutes les routes de l'API sont préfixées par `/api/v1/` :
 
-* **GET `/api/v1/pokemons**` : Renvoie la liste de tous les Pokémon.
+* GET `/api/v1/pokemons` : Renvoie la liste de tous les Pokémon.
 
 
-* **GET `/api/v1/pokemons/random**` : Renvoie un Pokémon aléatoire.
+* GET `/api/v1/pokemons/random` : Renvoie un Pokémon aléatoire.
 
 
-* **GET `/api/v1/pokemons/:id**` : Renvoie un Pokémon selon son identifiant numérique (renvoie `404` si introuvable).
+* GET `/api/v1/pokemons/:id` : Renvoie un Pokémon selon son identifiant numérique (renvoie `404` si introuvable).
 
 
-* **GET `/api/v1/pokemons/:name**` : Renvoie un Pokémon selon son nom (renvoie `404` si introuvable).
+* GET `/api/v1/pokemons/:name` : Renvoie un Pokémon selon son nom (renvoie `404` si introuvable).
 
 
 
