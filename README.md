@@ -73,4 +73,4 @@ Toutes les routes de l'API sont préfixées par `/api/v1/` :
 Un système de limitation de requêtes (*Rate Limiting*) par adresse IP est actif globalement sur l'API (maximum 10 requêtes par minute).
 
 
-> made by chatGPT
+> README made by chatGPT
